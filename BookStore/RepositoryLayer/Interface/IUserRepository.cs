@@ -10,5 +10,8 @@ namespace RepositoryLayer.Interface
     {
         Task<RegisterModel> Register(RegisterModel register);
         Task<RegisterModel> Login(LoginModel login);
+        Task<RegisterModel> Reset(ResetModel reset);
+        Task<bool> Forgot(string emailID);
+
     }
 }

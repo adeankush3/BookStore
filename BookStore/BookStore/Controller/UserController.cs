@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ModelLayer;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace BookStore.Controller
@@ -33,12 +34,12 @@ namespace BookStore.Controller
                 if (resp != null)
                 {
                     //this.logger.LogInformation(register.fullName + "Register Successfully");
-                    return this.Ok(new ResponseModel<RegisterModel> { Status = true, Message = "User Register Successfully",Data = resp });
+                    return this.Ok(new ResponseModel<RegisterModel> { Status = true, Message = "User Register Successfully", Data = resp });
                 }
                 else
                 {
-                     //this.logger.LogInformation(register.fullName + "Is Not Register");
-                     return this.BadRequest(new { Status = false, Message = "User Not Register" });
+                    //this.logger.LogInformation(register.fullName + "Is Not Register");
+                    return this.BadRequest(new { Status = false, Message = "User Not Register" });
                 }
             }
             catch (Exception e)
@@ -62,8 +63,8 @@ namespace BookStore.Controller
                 {
 
                     //this.logger.LogInformation(login.fullName + "Login Successfully");
-                    string token=this.manager.GetJWTToken(login.emailID);
-                    return this.Ok(new ResponseModel<RegisterModel> { Status = true, Message = "User Login Successfully",Token=token});
+                    string token = this.manager.GetJWTToken(login.emailID);
+                    return this.Ok(new ResponseModel<RegisterModel> { Status = true, Message = "User Login Successfully", Token = token });
                 }
                 else
 
@@ -79,5 +80,33 @@ namespace BookStore.Controller
                 return this.NotFound(new { Status = false, Message = e.Message });
             }
         }
+        //Reset Part
+        [HttpPut]
+        [Route("reset")]
+        public async Task<IActionResult> Reset(ResetModel reset)
+        {
+            try
+            {
+                //string emailID = User.FindFirst(ClaimTypes.Email).Value.ToString();
+                var response = await this.manager.Reset(reset);
+                if (response != null)
+                {
+                    return this.Ok(new ResponseModel<RegisterModel> { Status = true, Message = "Password Change Successfully", Data = response });
+                    
+                }
+                else
+
+                {
+                    return this.BadRequest(new { Status = false, Message = "Reset Password Failed", Data = response });
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                return this.NotFound(new { Status = false, Message = e.Message });
+            }
+        }
+
     }
 }

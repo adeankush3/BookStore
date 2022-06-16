@@ -71,6 +71,21 @@ namespace ManagerLayer.Mannger
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
+        public async Task<RegisterModel> Reset(ResetModel reset)
+        {
+            try
+            {
+                return await this.repo.Reset(reset);
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
+        }
+
+        
     }
 
 }

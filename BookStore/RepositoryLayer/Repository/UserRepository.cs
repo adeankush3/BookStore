@@ -5,6 +5,8 @@ using MongoDB.Driver.Linq;
 using RepositoryLayer.Interface;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,6 +56,34 @@ namespace RepositoryLayer.Repository
                         return check;
                     }
                     return null;
+                }
+                return null;
+            }
+            catch (ArgumentNullException e)
+            {
+
+                throw new Exception(e.Message);
+            }
+        }
+
+        public Task<bool> Forgot(string emailID)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        public async Task<RegisterModel> Reset(ResetModel reset)
+        {
+            
+            try
+            {
+                var check = await this.User.AsQueryable().Where(x => x.emailID == reset.emailID).FirstOrDefaultAsync();
+                if (check != null)
+                {
+                    await this.User.UpdateOneAsync(x => x.emailID == reset.emailID,
+                        Builders<RegisterModel>.Update.Set(x => x.password , reset.ConfirmPassword));
+                    return check;
                 }
                 return null;
             }

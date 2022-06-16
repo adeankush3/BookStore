@@ -11,5 +11,6 @@ namespace ManagerLayer.Interface
         Task<RegisterModel> Register(RegisterModel register);
         Task<RegisterModel> Login(LoginModel login);
         public string GetJWTToken(string emailID);
+        Task<RegisterModel> Reset(ResetModel reset);
     }
 }

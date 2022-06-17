@@ -13,10 +13,10 @@ namespace ModelLayer
         public string BookId { get; set; }
         public string BookName { get; set; }
         public string AuthorName { get; set; }
-        public string Rating { get; set; }
-        public string RatingCount { get; set; }
-        public string DiscountPrice { get; set; }
-        public string ActualPrice { get; set; }
+        public decimal Rating { get; set; }
+        public int totalRating { get; set; }
+        public int DiscountPrice { get; set; }
+        public int ActualPrice { get; set; }
         public string Description { get; set; }
         public string BookImage { get; set; }
         public string BookQuantity { get; set; }

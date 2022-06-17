@@ -42,6 +42,9 @@ namespace BookStore
             services.AddTransient<IUserManager, UserManager>();
             services.AddTransient<IUserRepository, UserRepository>();
 
+            services.AddTransient<IBookManager, BookManager>();
+            services.AddTransient<IBookRepository, BookRepository>();
+
 
             services.AddAuthentication(x =>
             {

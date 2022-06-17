@@ -108,5 +108,28 @@ namespace BookStore.Controller
             }
         }
 
+        [HttpPost]
+        [Route("forgot")]
+        public async Task<IActionResult> Forgot(string emailID)
+        {
+            try
+            {
+                bool response = await this.manager.Forgot(emailID);
+                if (response != false)
+                {
+                    string token = this.manager.GetJWTToken(emailID);
+                    return this.Ok(new ResponseModel<RegisterModel> { Status = true, Message = "Mail Send Successfully", Token = token });
+                }
+                else
+                {
+                    return this.BadRequest(new { Status = false, Message = "Mail Not Send" });
+
+                }
+            }
+            catch (Exception e)
+            {
+                return this.NotFound(new { Status = false, Message = e.Message });
+            }
+        }
     }
 }

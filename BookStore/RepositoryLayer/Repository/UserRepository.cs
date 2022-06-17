@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Experimental.System.Messaging;
+using Microsoft.Extensions.Configuration;
 using ModelLayer;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -7,8 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+
+
 
 namespace RepositoryLayer.Repository
 {
@@ -66,12 +70,78 @@ namespace RepositoryLayer.Repository
             }
         }
 
-        public Task<bool> Forgot(string emailID)
+        
+        public async Task<bool> Forgot(string emailID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var check = await this.User.AsQueryable().Where(x => x.emailID == emailID).FirstOrDefaultAsync();
+                if (check != null)
+                {
+                    SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+                    client.EnableSsl = true;
+                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    client.UseDefaultCredentials = true;
+                    client.Credentials = new NetworkCredential("shaluade67@gmail.com", "Shalu@123");
+                    MailMessage msgObj = new MailMessage();
+                    msgObj.To.Add(emailID);
+                    msgObj.From = new MailAddress("shaluade67@gmail.com");
+                    msgObj.Subject = "Password Reset Link";
+                    //msgObj.Body = $"www.bookstore.com/reset-password/{token}";
+                    client.Send(msgObj);
+                }
+                return false;
+               
+                //MessageQueue queue;
+                ////Add message to queue
+                //if (MessageQueue.Exists(@".\Private$\BooKStore"))
+                //{
+                //    queue = new MessageQueue(@".\Private$\BooKStore");
+                //}
+
+                //else
+                //{
+                //    queue = MessageQueue.Create(@".\Private$\BooKStore");
+                //}
+
+                //Message message = new Message();
+                //message.Formatter = new BinaryMessageFormatter();
+                ////message.Body = GetJWTToken(emailID, User);
+                //message.Label = "Forgot password Email";
+                //queue.Send(message);
+
+                //Message msg = queue.Receive();
+                //msg.Formatter = new BinaryMessageFormatter();
+                //EmailServices.SendMail(emailID, message.Body.ToString());
+                //queue.ReceiveCompleted += new ReceiveCompletedEventHandler(msmqQueue_ReceiveCompleted);
+
+                //queue.BeginReceive();
+                //queue.Close();
+                //return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
-
-
+        public void msmqQueue_ReceiveCompleted(object sender, ReceiveCompletedEventArgs e)
+        {
+            try
+            {
+                MessageQueue queue = (MessageQueue)sender;
+                Message msg = queue.EndReceive(e.AsyncResult);
+                //EmailServices.SendMail(e.Message.ToString(), GenerateToken(e.Message.ToString()));
+                queue.BeginReceive();
+            }
+            catch (MessageQueueException ex)
+            {
+                if (ex.MessageQueueErrorCode == MessageQueueErrorCode.AccessDenied)
+                {
+                    Console.WriteLine("Access is denied. " +
+                        "Queue might be a system queue.");
+                }
+            }
+        }
 
         public async Task<RegisterModel> Reset(ResetModel reset)
         {

@@ -12,6 +12,7 @@ namespace RepositoryLayer.Interface
         Task<RegisterModel> Login(LoginModel login);
         Task<RegisterModel> Reset(ResetModel reset);
         Task<bool> Forgot(string emailID);
+        //public string GetJWTToken(string emailID);
 
     }
 }

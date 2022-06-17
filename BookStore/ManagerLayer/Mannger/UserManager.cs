@@ -85,7 +85,43 @@ namespace ManagerLayer.Mannger
             }
         }
 
-        
+        public async Task<bool> Forgot(string emailID)
+        {
+
+            try
+            {
+                return await this.repo.Forgot(emailID);
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
+        }
+        public string GenerateToken(string emailID)
+        {
+            if (emailID == null)
+            {
+                return null;
+            }
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenKey = Encoding.ASCII.GetBytes("THIS_IS_MY_KEY_TO_GENERATE_TOKEN");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("emailID", emailID),
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+
+                SigningCredentials =
+                new SigningCredentials(
+                    new SymmetricSecurityKey(tokenKey),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
     }
 
 }

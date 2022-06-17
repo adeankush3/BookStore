@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ModelLayer;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BookStore.Controller
@@ -72,6 +73,49 @@ namespace BookStore.Controller
                 }
             }
 
+        }
+        [HttpPut]
+        [Route("updateCart")]
+        public async Task<IActionResult> UpdateCartQuantity([FromBody] CartModel cart)
+        {
+            try
+            {
+
+                var resp = await this.manager.UpdateCartQuantity(cart);
+                if (resp != null)
+                {
+
+                    return this.Ok(new ResponseModel<CartModel> { Status = true, Message = " Data Is UpDate ", Data = resp });
+                }
+                else
+                {
+
+                    return this.BadRequest(new { Status = false, Message = "Record not Found" });
+                }
+            }
+            catch (Exception e)
+            {
+                {
+
+                    return this.NotFound(new { Status = false, Message = e.Message });
+                }
+            }
+        }
+        [HttpGet]
+        [Route("getallCart")]
+        public IEnumerable<CartModel> GetAllCart()
+        {
+            try
+            {
+                var resp = this.manager.GetAllCart();
+                return resp;
+            }
+
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

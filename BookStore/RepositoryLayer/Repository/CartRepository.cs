@@ -42,6 +42,11 @@ namespace RepositoryLayer.Repository
             }
         }
 
+        public IEnumerable<CartModel> GetAllCart()
+        {
+            return Cart.Find(FilterDefinition<CartModel>.Empty).ToList();
+        }
+
         public async Task<bool> RemoveCart(CartModel cart)
         {
             try
@@ -49,6 +54,26 @@ namespace RepositoryLayer.Repository
                 await this.Cart.FindOneAndDeleteAsync(x => x.cartID == cart.cartID);
                 return true;
 
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<CartModel> UpdateCartQuantity(CartModel cart)
+        {
+            try
+            {
+                var check = await this.Cart.Find(x => x.cartID == cart.cartID).SingleOrDefaultAsync();
+                if (check != null)
+                {
+                    await this.Cart.UpdateOneAsync(x => x.cartID==cart.cartID,
+                        Builders<CartModel>.Update.Set(x=> x.Quantity,cart.Quantity));
+                    return check;
+                }
+                return null;
             }
             catch (Exception)
             {

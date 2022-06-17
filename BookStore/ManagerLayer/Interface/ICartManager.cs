@@ -10,5 +10,7 @@ namespace ManagerLayer.Interface
     {
         Task<CartModel> AddToCart(CartModel cart);
         Task<bool> RemoveCart(CartModel cart);
+        Task<CartModel> UpdateCartQuantity(CartModel cart);
+        IEnumerable<CartModel> GetAllCart();
     }
 }

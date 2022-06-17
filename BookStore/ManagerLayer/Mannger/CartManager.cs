@@ -30,11 +30,37 @@ namespace ManagerLayer.Mannger
             }
         }
 
+        public IEnumerable<CartModel> GetAllCart()
+        {
+            try
+            {
+                return this.repo.GetAllCart();
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
+        }
+
         public async Task<bool> RemoveCart(CartModel cart)
         {
             try
             {
                 return await this.repo.RemoveCart(cart);
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<CartModel> UpdateCartQuantity(CartModel cart)
+        {
+            try
+            {
+                return await this.repo.UpdateCartQuantity(cart);
             }
             catch (Exception e)
             {

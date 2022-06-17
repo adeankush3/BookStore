@@ -1,11 +1,13 @@
 ﻿using Experimental.System.Messaging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using ModelLayer;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using RepositoryLayer.Interface;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
@@ -76,48 +78,38 @@ namespace RepositoryLayer.Repository
             try
             {
                 var check = await this.User.AsQueryable().Where(x => x.emailID == emailID).FirstOrDefaultAsync();
-                if (check != null)
+                if (check == null)
                 {
-                    SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-                    client.EnableSsl = true;
-                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                    client.UseDefaultCredentials = true;
-                    client.Credentials = new NetworkCredential("shaluade67@gmail.com", "Shalu@123");
-                    MailMessage msgObj = new MailMessage();
-                    msgObj.To.Add(emailID);
-                    msgObj.From = new MailAddress("shaluade67@gmail.com");
-                    msgObj.Subject = "Password Reset Link";
-                    //msgObj.Body = $"www.bookstore.com/reset-password/{token}";
-                    client.Send(msgObj);
+                    return false;
                 }
-                return false;
-               
-                //MessageQueue queue;
-                ////Add message to queue
-                //if (MessageQueue.Exists(@".\Private$\BooKStore"))
-                //{
-                //    queue = new MessageQueue(@".\Private$\BooKStore");
-                //}
+                
 
-                //else
-                //{
-                //    queue = MessageQueue.Create(@".\Private$\BooKStore");
-                //}
+                MessageQueue queue;
+                //Add message to queue
+                if (MessageQueue.Exists(@".\Private$\BooKStore"))
+                {
+                    queue = new MessageQueue(@".\Private$\BooKStore");
+                }
 
-                //Message message = new Message();
-                //message.Formatter = new BinaryMessageFormatter();
-                ////message.Body = GetJWTToken(emailID, User);
-                //message.Label = "Forgot password Email";
-                //queue.Send(message);
+                else
+                {
+                    queue = MessageQueue.Create(@".\Private$\BooKStore");
+                }
 
-                //Message msg = queue.Receive();
-                //msg.Formatter = new BinaryMessageFormatter();
-                //EmailServices.SendMail(emailID, message.Body.ToString());
-                //queue.ReceiveCompleted += new ReceiveCompletedEventHandler(msmqQueue_ReceiveCompleted);
+                Message message = new Message();
+                message.Formatter = new BinaryMessageFormatter();
+                message.Body = GetJWTToken(emailID);
+                message.Label = "Forgot password Email";
+                queue.Send(message);
 
-                //queue.BeginReceive();
-                //queue.Close();
-                //return true;
+                Message msg = queue.Receive();
+                msg.Formatter = new BinaryMessageFormatter();
+                EmailServices.SendMail(emailID, message.Body.ToString());
+                queue.ReceiveCompleted += new ReceiveCompletedEventHandler(msmqQueue_ReceiveCompleted);
+
+                queue.BeginReceive();
+                queue.Close();
+                return true;
             }
             catch (Exception ex)
             {
@@ -130,7 +122,7 @@ namespace RepositoryLayer.Repository
             {
                 MessageQueue queue = (MessageQueue)sender;
                 Message msg = queue.EndReceive(e.AsyncResult);
-                //EmailServices.SendMail(e.Message.ToString(), GenerateToken(e.Message.ToString()));
+                EmailServices.SendMail(e.Message.ToString(), GetJWTToken(e.Message.ToString()));
                 queue.BeginReceive();
             }
             catch (MessageQueueException ex)
@@ -142,6 +134,34 @@ namespace RepositoryLayer.Repository
                 }
             }
         }
+        public string GetJWTToken(string emailID)
+        {
+            if (emailID == null)
+            {
+                return null;
+            }
+
+            // generate token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenKey = Encoding.ASCII.GetBytes("THIS_IS_MY_KEY_TO_GENERATE_TOKEN");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("emailID", emailID),
+
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+
+                SigningCredentials =
+                               new SigningCredentials(
+                    new SymmetricSecurityKey(tokenKey),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
 
         public async Task<RegisterModel> Reset(ResetModel reset)
         {

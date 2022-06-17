@@ -9,5 +9,6 @@ namespace RepositoryLayer.Interface
     public interface ICartRepository
     {
         Task<CartModel> AddToCart(CartModel cart);
+        Task<bool> RemoveCart(CartModel cart);
     }
 }

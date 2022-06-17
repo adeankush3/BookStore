@@ -42,6 +42,19 @@ namespace RepositoryLayer.Repository
             }
         }
 
-        
+        public async Task<bool> RemoveCart(CartModel cart)
+        {
+            try
+            {
+                await this.Cart.FindOneAndDeleteAsync(x => x.cartID == cart.cartID);
+                return true;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

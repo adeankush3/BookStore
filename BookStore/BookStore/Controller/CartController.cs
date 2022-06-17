@@ -46,5 +46,32 @@ namespace BookStore.Controller
                 }
             }
         }
+        [HttpDelete]
+        [Route("removeFromCart")]
+        public async Task<IActionResult> RemoveCart(CartModel cart)
+        {
+            try
+            {
+
+                bool resp = await this.manager.RemoveCart(cart);
+                if (resp != false)
+                {
+
+                    return this.Ok(new ResponseModel<CartModel> { Status = true, Message = " Remove the cart!!!!!!", Data = resp });
+                }
+                else
+                {
+
+                    return this.BadRequest(new { Status = false, Message = "Not Found any Data!!!!!!" });
+                }
+            }
+            catch (Exception e)
+            {
+                {
+                    return this.NotFound(new { Status = false, Message = e.Message });
+                }
+            }
+
+        }
     }
 }

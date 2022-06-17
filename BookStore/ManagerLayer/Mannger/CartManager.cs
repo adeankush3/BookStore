@@ -29,5 +29,18 @@ namespace ManagerLayer.Mannger
                 throw new Exception(e.Message);
             }
         }
+
+        public async Task<bool> RemoveCart(CartModel cart)
+        {
+            try
+            {
+                return await this.repo.RemoveCart(cart);
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
+        }
     }
 }

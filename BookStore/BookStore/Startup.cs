@@ -49,6 +49,9 @@ namespace BookStore
             services.AddTransient<ICartRepository, CartRepository>();
 
 
+            services.AddTransient<IWishListManager, WishListManager>();
+            services.AddTransient<IWishListRepository, WishListRepository>();
+
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

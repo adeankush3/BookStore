@@ -11,7 +11,7 @@ namespace RepositoryLayer.Repository
 {
     public class AddressRepository : IAddressRepository
     {
-        private readonly IMongoCollection<AddressModel> AddressType;
+        private readonly IMongoCollection<AddressModel> Address;
         private readonly IConfiguration configuration;
 
         public AddressRepository(IDBSetting db, IConfiguration configuration)
@@ -20,17 +20,17 @@ namespace RepositoryLayer.Repository
             this.configuration = configuration;
             var userclient = new MongoClient(db.ConnectionString);
             var database = userclient.GetDatabase(db.DatabaseName);
-            AddressType = database.GetCollection<AddressModel>("AddressType");
+            Address = database.GetCollection<AddressModel>("Address");
         }
 
         public async Task<AddressModel> AddToAddress(AddressModel address)
         {
             try
             {
-                var check = await this.AddressType.Find(x => x.addressID == address.addressID).SingleOrDefaultAsync();
+                var check = await this.Address.Find(x => x.addressID == address.addressID).SingleOrDefaultAsync();
                 if (check == null)
                 {
-                    await this.AddressType.InsertOneAsync(address);
+                    await this.Address.InsertOneAsync(address);
                     return address;
                 }
                 return null;
@@ -48,7 +48,7 @@ namespace RepositoryLayer.Repository
         {
             try
             {
-                await this.AddressType.FindOneAndDeleteAsync(x => x.addressID == address.addressID);
+                await this.Address.FindOneAndDeleteAsync(x => x.addressID == address.addressID);
                 return true;
 
             }
@@ -64,10 +64,10 @@ namespace RepositoryLayer.Repository
             {
                 try
                 {
-                    var ifExists = await this.AddressType.Find(x => x.addressID == address.addressID).SingleOrDefaultAsync();
+                    var ifExists = await this.Address.Find(x => x.addressID == address.addressID).SingleOrDefaultAsync();
                     if (ifExists != null)
                     {
-                        await this.AddressType.UpdateOneAsync(x => x.addressID == address.addressID,
+                        await this.Address.UpdateOneAsync(x => x.addressID == address.addressID,
                             Builders<AddressModel>.Update.Set(x => x.fullAddress, address.fullAddress)
                             .Set(x => x.city, address.city)
                             .Set(x => x.state, address.state)
@@ -77,7 +77,7 @@ namespace RepositoryLayer.Repository
                     }
                     else
                     {
-                        await this.AddressType.InsertOneAsync(address);
+                        await this.Address.InsertOneAsync(address);
                         return address;
                     }
                 }
@@ -91,7 +91,7 @@ namespace RepositoryLayer.Repository
 
         IEnumerable<AddressModel> IAddressRepository.GetAllAddress()
         {
-            return AddressType.Find(FilterDefinition<AddressModel>.Empty).ToList();
+            return Address.Find(FilterDefinition<AddressModel>.Empty).ToList();
         }
     }
 }

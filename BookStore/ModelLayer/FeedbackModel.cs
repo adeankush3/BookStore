@@ -7,27 +7,22 @@ using System.Text;
 
 namespace ModelLayer
 {
-   // [BsonIgnoreExtraElements]
-    public class AddressModel
+    public class FeedbackModel
     {
-
-
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string addressID { get; set; }
+        public string feedbackID { get; set; }
+
+        public string Comment { get; set; }
+        public decimal Rating { get; set; }
 
 
         [ForeignKey("RegisterModel")]
         public string userId { get; set; }
         public virtual RegisterModel RegisterModel { get; set; }
 
-        [ForeignKey("AddressType")]
-         public string addressTypeID { get; set; }
-        public string fullAddress { get; set; }
-        public string city { get; set; }
-        public string state { get; set; }
-        public double pinCode { get; set; }
-
-
+        [ForeignKey("BookModel")]
+        public string BookId { get; set; }
+        public virtual BookModel BookModel { get; set; }
     }
 }

@@ -55,6 +55,12 @@ namespace BookStore
             services.AddTransient<IAddressManager, AddressManager>();
             services.AddTransient<IAddressRepository, AddressRepository>();
 
+            services.AddTransient<IFeedbackManager, FeedbackManager>();
+            services.AddTransient<IFeedbackRepository, FeedbackRepository>();
+
+            //services.AddTransient<IOrderManager, OrderManager>();
+            //services.AddTransient<IOrderRepository, OrderRepository>();
+
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

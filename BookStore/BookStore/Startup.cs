@@ -58,8 +58,8 @@ namespace BookStore
             services.AddTransient<IFeedbackManager, FeedbackManager>();
             services.AddTransient<IFeedbackRepository, FeedbackRepository>();
 
-            //services.AddTransient<IOrderManager, OrderManager>();
-            //services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddTransient<IOrderManager, OrderManager>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
 
             services.AddAuthentication(x =>
             {

@@ -18,6 +18,13 @@ namespace BookStore
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+
+            .ConfigureLogging((hosttingContext,logging) =>
+            {
+                logging.AddConfiguration(hosttingContext.Configuration.GetSection("Logging"));
+                logging.AddDebug();
+                //logging.AddNlog();
+            })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

@@ -6,6 +6,7 @@ using System.Text;
 
 namespace ModelLayer
 {
+    [BsonIgnoreExtraElements]
     public class BookModel
     {
         [BsonId]

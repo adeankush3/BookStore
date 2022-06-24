@@ -14,12 +14,12 @@ namespace BookStore.Controller
     public class UserController : ControllerBase
     {
         private readonly IUserManager manager;
-        //private readonly ILogger<UserController> logger;
+        private readonly ILogger<UserController> logger;
 
-        public UserController(IUserManager manager) //, ILogger<UserController> logger
+        public UserController(IUserManager manager, ILogger<UserController> logger) 
         {
             this.manager = manager;
-            //this.logger = logger;
+            this.logger = logger;
         }
 
         [HttpPost]
@@ -29,23 +29,23 @@ namespace BookStore.Controller
         {
             try
             {
-                //this.logger.LogInformation(register.fullName + "Is Trying To Register");
+                this.logger.LogInformation(register.fullName + "Is Trying To Register");
                 var resp = await this.manager.Register(register);
                 if (resp != null)
                 {
-                    //this.logger.LogInformation(register.fullName + "Register Successfully");
+                    this.logger.LogInformation(register.fullName + "Register Successfully");
                     return this.Ok(new ResponseModel<RegisterModel> { Status = true, Message = "User Register Successfully", Data = resp });
                 }
                 else
                 {
-                    //this.logger.LogInformation(register.fullName + "Is Not Register");
+                    this.logger.LogInformation(register.fullName + "Is Not Register");
                     return this.BadRequest(new { Status = false, Message = "User Not Register" });
                 }
             }
             catch (Exception e)
             {
                 {
-                    //this.logger.LogInformation(register.fullName + "Has An Exception in Register");
+                    this.logger.LogInformation(register.fullName + "Has An Exception in Register");
                     return this.NotFound(new { Status = false, Message = e.Message });
                 }
             }
@@ -87,7 +87,7 @@ namespace BookStore.Controller
         {
             try
             {
-                //string emailID = User.FindFirst(ClaimTypes.Email).Value.ToString();
+                string emailID = User.FindFirst(ClaimTypes.Email).Value.ToString();
                 var response = await this.manager.Reset(reset);
                 if (response != null)
                 {
